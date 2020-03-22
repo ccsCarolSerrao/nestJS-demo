@@ -3,7 +3,7 @@ import { HttpStatus } from '@nestjs/common'
 
 export interface IMessage {
   code: number
-  status: number
+  status: HttpStatus
   message: string
   result?: any
 }
@@ -81,6 +81,13 @@ export default class MessageUtil {
         message: 'Example was deletd',
       } as IMessage,
     },
+    error: {
+      notFound: {
+        code: 151,
+        status: HttpStatus.NOT_FOUND,
+        message: 'Example was not found',
+      } as IMessage,
+    }
   }
 
   static authentication = {

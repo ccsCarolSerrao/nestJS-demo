@@ -7,58 +7,40 @@ import {
   Param,
   Put,
   Delete,
-  Res,
+  HttpCode,
 } from '@nestjs/common'
-import { Response } from 'express'
 
-import IExampleApi from './example-api.interface'
-import MessageUtil, { IMessage } from '../../utils/messages.util'
-import ResponseUtil from '../../utils/response.util'
+import ExampleApiService from '../../example-api/v1/example-api.service'
+import ExampleApiDto from './dtos/example-api.dto'
+import ExampleApiFilterDto from './dtos/example-api-filter.dto'
 
 @Controller('v1/example-api')
-export class ExampleApiController {
-  @Post()
-  async create(@Res() res: Response, @Body() exampleApi: IExampleApi) {
-    const message: IMessage = MessageUtil.example.info.create
-    message.result = exampleApi
+export default class ExampleApiController {
+  constructor(private exampleService: ExampleApiService) {}
 
-    return ResponseUtil.handle(res, message)
+  @Post()
+  @HttpCode(201)
+  async create(@Body() exampleApi: ExampleApiDto) {
+    return await this.exampleService.create(exampleApi)
   }
 
   @Get()
-  async findAll(@Res() res: Response, @Query() query: any) {
-    const message: IMessage = MessageUtil.example.info.findAll
-    message.result = query
-
-    return ResponseUtil.handle(res, message)
+  async findAll(@Query() query: ExampleApiFilterDto) {
+    return await this.exampleService.findAll(query)
   }
 
   @Get(':id')
-  async findOne(@Res() res: Response, @Param('id') id: string) {
-    const message: IMessage = MessageUtil.example.info.findOne
-    message.message += `- id: ${id}`
-
-    return ResponseUtil.handle(res, message)
+  async findOne(@Param('id') id: string) {
+    return await this.exampleService.findOne(id)
   }
 
   @Put(':id')
-  async update(
-    @Res() res: Response,
-    @Param('id') id: string,
-    @Body() exampleApi: IExampleApi
-  ) {
-    const message: IMessage = MessageUtil.example.info.update
-    message.message += `- id: ${id}`
-    message.result = exampleApi
-
-    return ResponseUtil.handle(res, message)
+  async update(@Param('id') id: string, @Body() exampleApi: ExampleApiDto) {
+    return await this.exampleService.update(exampleApi, id)
   }
 
   @Delete(':id')
-  async remove(@Res() res: Response, @Param('id') id: string) {
-    const message: IMessage = MessageUtil.example.info.delete
-    message.message += `- id: ${id}`
-
-    return ResponseUtil.handle(res, message)
+  async remove(@Param('id') id: string) {
+    return await this.exampleService.delete(id)
   }
 }

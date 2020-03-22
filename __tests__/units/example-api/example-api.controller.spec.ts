@@ -1,119 +1,238 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Response } from 'express'
 import { random } from 'faker'
 
-import { responseMock } from '../../../__mocks__/express/response.mock'
 import { exampleApiMock } from '../../../__mocks__/example-api.mock'
 
-import { ExampleApiController } from '../../../src/example-api/v1/example-api.controller'
-import IExampleApi from '../../../src/example-api/v1/example-api.interface'
+import ExampleApiController from '../../../src/example-api/v1/example-api.controller'
+import ExampleApiService from '../../../src/example-api/v1/example-api.service'
+import ExampleApi from '../../../src/example-api/v1/interfaces/example-api.interface'
+import ExampleApiFilterDto from '../../../src/example-api/v1/dtos/example-api-filter.dto'
+import ExampleApiFilter from '../../../src/example-api/v1/interfaces/example-api-filter.interface'
 import MessageUtil from '../../../src/utils/messages.util'
 
 describe('Example Api Controller', () => {
   let controller: ExampleApiController
-  let resMock: Response
-  let exampleMock: IExampleApi
+  let service: ExampleApiService
+
+  let exampleMock: ExampleApi
   let idMock: string
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ExampleApiController],
+      providers: [ExampleApiService],
     }).compile()
 
+    service = module.get<ExampleApiService>(ExampleApiService)
     controller = module.get<ExampleApiController>(ExampleApiController)
 
-    resMock = responseMock()
     idMock = random.uuid()
     exampleMock = Object.assign({}, exampleApiMock)
-    delete exampleMock['id']
   })
 
   it('should be defined', () => {
+    expect(service).toBeDefined()
     expect(controller).toBeDefined()
   })
 
   describe('Create', () => {
-    it('should return a create message when sent a valid body', async () => {
-      const result = await controller.create(resMock, exampleMock)
-      
-      expect(result.json).toHaveBeenCalledWith(MessageUtil.example.info.create)
+    it('should return a new example object when sent a valid body', async () => {
+      const resultServiceMock = await buildServiceCreateMock(service)
+
+      const result = await controller.create(exampleMock)
+
+      expect(result).toBe(resultServiceMock)
     })
-
-    it('should return a create status when sent a valid body', async () => {
-      const result = await controller.create(resMock, exampleMock)
-      
-      expect(result.status).toHaveBeenCalledWith(MessageUtil.example.info.create.status)})
-
-    it('should return an error create message when sent a nonvalid body', async () => {})
-
-    it('should return an error create status when sent a nonvalid body', async () => {})
   })
 
   describe('Find All', () => {
-    it('should return a findall message when sent a valid body', async () => {
-      const result = await controller.findAll(resMock, null)
-      
-      expect(result.json).toHaveBeenCalledWith(MessageUtil.example.info.findAll)
+    let filterMock: ExampleApiFilter
+
+    beforeEach(async () => {
+      filterMock = new ExampleApiFilterDto()
     })
 
-    it('should return a findall status when sent a valid body', async () => {
-      const result = await controller.findAll(resMock, null)
-      
-      expect(result.status).toHaveBeenCalledWith(MessageUtil.example.info.findAll.status)})
+    it('should return all examples object created when sent a valid filter', async () => {
+      const resultServiceMock: ExampleApi[] = await buildServiceFindAllMock(
+        service
+      )
+      const result = await controller.findAll(filterMock)
 
-    it('should return an error findall message when sent a nonvalid body', async () => {})
+      expect(result).toBe(resultServiceMock)
+    })
 
-    it('should return an error findall status when sent a nonvalid body', async () => {})
+    it('should return a null object  when sent a nonvalid filter', async () => {
+      const resultServiceMock: ExampleApi[] = await buildServiceFindAllMock(
+        service,
+        true
+      )
+
+      const newIdMock = random.uuid()
+      filterMock.id = newIdMock
+
+      const result = await controller.findAll(filterMock)
+
+      expect(result).toBe(resultServiceMock)
+    })
   })
 
   describe('Find One', () => {
-    it('should return a findone message when sent a valid body', async () => {
-      const result = await controller.findOne(resMock, idMock)
-      
-      expect(result.json).toHaveBeenCalledWith(MessageUtil.example.info.findOne)
+    it('should return an example object when sent a valid id', async () => {
+      const resultServiceMock:
+        | ExampleApi
+        | undefined = await buildServiceFindOneMock(service)
+
+      const result = await controller.findOne(
+        (resultServiceMock as ExampleApi).id!
+      )
+
+      expect(result).toBe(resultServiceMock)
     })
 
-    it('should return a findone status when sent a valid body', async () => {
-      const result = await controller.findOne(resMock, idMock)
-      
-      expect(result.status).toHaveBeenCalledWith(MessageUtil.example.info.findOne.status)})
+    it('should return undefined when sent a nonvalid id', async () => {
+      const resultServiceMock:
+        | ExampleApi
+        | undefined = await buildServiceFindOneMock(service, true)
 
-    it('should return an error findone message when sent a nonvalid body', async () => {})
+      const result = await controller.findOne(idMock)
 
-    it('should return an error findone status when sent a nonvalid body', async () => {})
+      expect(result).toBe(resultServiceMock)
+    })
   })
 
   describe('Update', () => {
-    it('should return a update message when sent a valid body', async () => {
-      const result = await controller.update(resMock, idMock, exampleMock)
-      
-      expect(result.json).toHaveBeenCalledWith(MessageUtil.example.info.update)
+    it('should return an example object when sent a valid id', async () => {
+      const resultServiceMock:
+        | ExampleApi
+        | undefined = await buildServiceUpdateMock(service)
+
+      const result = await controller.update(
+        (resultServiceMock as ExampleApi).id!,
+        exampleMock
+      )
+
+      expect(result).toBe(resultServiceMock)
     })
 
-    it('should return a update status when sent a valid body', async () => {
-      const result = await controller.update(resMock,idMock, exampleMock)
-      
-      expect(result.status).toHaveBeenCalledWith(MessageUtil.example.info.update.status)})
+    it('should return throw an error when sent a nonvalid id', async () => {
+      await buildServiceUpdateMock(service, true)
 
-    it('should return an error update message when sent a nonvalid body', async () => {})
-
-    it('should return an error update status when sent a nonvalid body', async () => {})
+      try {
+        await controller.update(idMock, exampleMock)
+      } catch (error) {
+        expect(error).toBe(MessageUtil.example.error.notFound)
+      }
+    })
   })
 
   describe('Delete', () => {
-    it('should return a delete message when sent a valid id', async () => {
-      const result = await controller.remove(resMock, idMock)
-      
-      expect(result.json).toHaveBeenCalledWith(MessageUtil.example.info.delete)
+    it('should void when sent a valid id', async () => {
+      const resultServiceMock = await buildServiceDeleteMock(service)
+      const result = await controller.remove(idMock)
+
+      expect(result).toBe(resultServiceMock)
     })
 
-    it('should return a delete status when sent a valid id', async () => {
-      const result = await controller.remove(resMock, idMock)
-      
-      expect(result.status).toHaveBeenCalledWith(MessageUtil.example.info.delete.status)})
+    it('should throw an error when sent a nonvalid id', async () => {
+      await buildServiceDeleteMock(service, true)
 
-    it('should return an error delete message when sent a nonvalid id', async () => {})
-
-    it('should return an error delete status when sent a nonvalid id', async () => {})
+      try {
+        await controller.remove(idMock)
+      } catch (error) {
+        expect(error).toBe(MessageUtil.example.error.notFound)
+      }
+    })
   })
 })
+
+const buildServiceCreateMock = async (service: ExampleApiService) => {
+  const serviceMock: ExampleApi = Object.assign({}, exampleApiMock)
+  serviceMock.id = random.uuid()
+
+  const resultServicePromise = Promise.resolve(serviceMock)
+
+  jest.spyOn(service, 'create').mockImplementation(() => resultServicePromise)
+
+  return resultServicePromise
+}
+
+const buildServiceFindOneMock = async (
+  service: ExampleApiService,
+  isUndefined: boolean = false
+) => {
+  let serviceMock: ExampleApi | undefined
+
+  if (!isUndefined) {
+    serviceMock = Object.assign({}, exampleApiMock) as ExampleApi
+    serviceMock.id = random.uuid()
+  }
+
+  const resultServicePromise = Promise.resolve(serviceMock)
+
+  jest.spyOn(service, 'findOne').mockImplementation(() => resultServicePromise)
+
+  return serviceMock
+}
+
+const buildServiceFindAllMock = async (
+  service: ExampleApiService,
+  isEmpty: boolean = false
+) => {
+  const serviceListMock: ExampleApi[] = []
+
+  if (!isEmpty) {
+    let serviceMock: ExampleApi
+
+    serviceMock = Object.assign({}, exampleApiMock)
+    serviceMock.id = random.uuid()
+    serviceListMock.push(serviceMock)
+
+    serviceMock = Object.assign({}, exampleApiMock)
+    serviceMock.id = random.uuid()
+    serviceListMock.push(serviceMock)
+
+    serviceMock = Object.assign({}, exampleApiMock)
+    serviceMock.id = random.uuid()
+    serviceListMock.push(serviceMock)
+  }
+  const resultServicePromise = Promise.resolve(serviceListMock)
+
+  jest.spyOn(service, 'findAll').mockImplementation(() => resultServicePromise)
+
+  return resultServicePromise
+}
+
+const buildServiceUpdateMock = async (
+  service: ExampleApiService,
+  isError: boolean = false
+) => {
+  if (isError) {
+    jest.spyOn(service, 'update').mockImplementation(() => {
+      throw MessageUtil.example.error.notFound
+    })
+    return
+  }
+
+  const serviceMock: ExampleApi = Object.assign({}, exampleApiMock)
+  serviceMock.id = random.uuid()
+
+  const resultServicePromise = Promise.resolve(serviceMock)
+
+  jest.spyOn(service, 'update').mockImplementation(() => resultServicePromise)
+
+  return resultServicePromise
+}
+
+const buildServiceDeleteMock = async (
+  service: ExampleApiService,
+  isError: boolean = false
+) => {
+  if (isError) {
+    jest.spyOn(service, 'delete').mockImplementation(() => {
+      throw MessageUtil.example.error.notFound
+    })
+    return
+  }
+
+  jest.spyOn(service, 'delete').mockImplementation()
+}

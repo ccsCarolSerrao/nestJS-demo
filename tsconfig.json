@@ -29,7 +29,7 @@
     "experimentalDecorators": true
   },
   "include": [
-      "src/**/*"
+      "src/**/*", "__tests__/units/example-api/example-api.service.spec.ts"
   ],
   "exclude": [
     "node_modules",

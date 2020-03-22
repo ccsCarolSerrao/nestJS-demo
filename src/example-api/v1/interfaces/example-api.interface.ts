@@ -1,4 +1,4 @@
-export default interface IExampleApi {
+export default interface ExampleApi {
   id?: string | null
   name: string
   email: string
