@@ -40,6 +40,7 @@ export default class ExampleApiService implements IExampleApiService {
 
         oldExampleApi.name = exampleApi.name ?? oldExampleApi.name
         oldExampleApi.email = exampleApi.email ?? oldExampleApi.email
+        oldExampleApi.date = exampleApi.date ?? oldExampleApi.date
         oldExampleApi.number = exampleApi.number ?? oldExampleApi.number
         oldExampleApi.value = exampleApi.value ?? oldExampleApi.value
 

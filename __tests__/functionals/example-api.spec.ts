@@ -25,7 +25,7 @@ describe('App Controller', () => {
         await app.init()
     })
 
-    afterAll(async () => {
+    afterEach(async () => {
         await app.close()
     })
 
@@ -147,16 +147,23 @@ describe('App Controller', () => {
                 .expect(HttpStatus.OK)
         })
 
-        it('shoud return an updated example object in result', async () => {
+        it('shoud return an updated example object in result when change all fields', async () => {
             const exampleApiCreated = await createExample(app, exampleApiCreateMock())
             const exampleApiUpdate = exampleApiUpdateMock()
-            
+
+            console.log(exampleApiUpdate)
+            console.log(exampleApiUpdate.date)
+
+
             const newExampleApi = Object.assign({}, exampleApiCreated)
             newExampleApi.name = exampleApiUpdate.name!
             newExampleApi.email = exampleApiUpdate.email!
             newExampleApi.date = exampleApiUpdate.date!
-            newExampleApi.number = exampleApiUpdate.number!
             newExampleApi.value = exampleApiUpdate.value!
+            newExampleApi.number = exampleApiUpdate.number!
+
+            console.log(newExampleApi.date)
+            console.log(exampleApiUpdate.date)
 
             return await superTest(app.getHttpServer())
                 .put(`${baseUrl}/${exampleApiCreated.id}`)
@@ -164,7 +171,7 @@ describe('App Controller', () => {
                 .expect(newExampleApi)
         })
 
-        it('shoud return an updated example object in result', async () => {
+        it('shoud return an updated example object in result  when change date and number', async () => {
             const exampleApiCreated = await createExample(app, exampleApiCreateMock())
             const exampleApiUpdate = exampleApiUpdateMock()
             exampleApiUpdate.date = exampleApiCreated.date
@@ -181,12 +188,12 @@ describe('App Controller', () => {
                 .expect(newExampleApi)
         })
 
-        it('shoud return an updated example object in result', async () => {
+        it('shoud return an updated example object in result when change name, email and value', async () => {
             const exampleApiCreated = await createExample(app, exampleApiCreateMock())
             const exampleApiUpdate = exampleApiUpdateMock()
             exampleApiUpdate.name = exampleApiCreated.name
             exampleApiUpdate.email = exampleApiCreated.email
-            exampleApiUpdate.value = exampleApiUpdate.value
+            exampleApiUpdate.value = exampleApiCreated.value
             
             const newExampleApi = Object.assign({}, exampleApiCreated)
             newExampleApi.date = exampleApiUpdate.date!

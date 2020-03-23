@@ -1,8 +1,9 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common'
 import LoggerMiddleware from './middlewares/logger.middleware'
 import ExampleApiModule from './example-api/v1/example-api.module'
-import { APP_FILTER } from '@nestjs/core'
+import { APP_FILTER, APP_PIPE } from '@nestjs/core'
 import AllExceptionsFilter from 'filters/all-exception.filter'
+import { ValidationPipe } from 'pipes/validation.pipe'
 
 @Module({
     imports: [ExampleApiModule],
@@ -10,6 +11,10 @@ import AllExceptionsFilter from 'filters/all-exception.filter'
         {
             provide: APP_FILTER,
             useClass: AllExceptionsFilter,
+        },
+        {
+            provide: APP_PIPE,
+            useClass: ValidationPipe,
         },
         LoggerMiddleware,
     ],

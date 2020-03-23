@@ -21,11 +21,6 @@ export default class MessageUtil {
                 status: HttpStatus.INTERNAL_SERVER_ERROR,
                 message: 'Internal Server Error - Request could not be carried out.',
             },
-            invalidQueryParameter: {
-                code: 1003,
-                status: HttpStatus.BAD_REQUEST,
-                message: 'Invalid Query Parameter - One of the query parameters specified is invalid',
-            },
             missingBody: {
                 code: 1004,
                 status: HttpStatus.BAD_REQUEST,
@@ -34,7 +29,7 @@ export default class MessageUtil {
             validationError: {
                 code: 1006,
                 status: HttpStatus.NOT_FOUND,
-                message: 'Fields Validations Error',
+                message: 'Validation Error',
             },
             sintaxeError: {
                 code: 1007,

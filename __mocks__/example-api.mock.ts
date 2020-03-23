@@ -9,11 +9,9 @@ export const exampleApiCreateMock = () => {
         id: random.uuid(),
         name: name.findName(),
         email: internet.email(),
-        date: moment(
-            moment()
-                .add(1, 'days')
-                .format('YYYY-MM-DD')
-        ).toDate(),
+        date: moment(moment().format('YYYY-MM-DD'))
+            .add(1, 'month')
+            .toDate(),
         number: random.number({ min: 0 }),
         value: random.number({ max: 100 }),
     } as ExampleApiCreateDto
@@ -23,11 +21,9 @@ export const exampleApiUpdateMock = () => {
     return {
         name: name.findName(),
         email: internet.email(),
-        date: moment(
-            moment()
-                .add(1, 'days')
-                .format('YYYY-MM-DD')
-        ).toDate(),
+        date: moment(moment().format('YYYY-MM-DD'))
+            .add(2, 'month')
+            .toDate(),
         number: random.number({ min: 0 }),
         value: random.number({ max: 100 }),
     } as ExampleApiUpdateDto
