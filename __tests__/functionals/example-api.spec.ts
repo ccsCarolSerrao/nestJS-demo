@@ -5,8 +5,12 @@ import { INestApplication, HttpStatus } from '@nestjs/common'
 import superTest from 'supertest'
 import { random } from 'faker'
 
+import {JwtAuthGuard} from '../../src/guards/jwt-auth.guard'
+import {RolesGuard} from '../../src/guards/role.guard'
+
 import ExampleApiController from '../../src/example-api/v1/example-api.controller'
 import ExampleApiService from '../../src/example-api/v1/example-api.service'
+
 import { exampleApiUpdateMock, exampleApiCreateMock } from '../../__mocks__/example-api.mock'
 import IExampleApi from '../../src/example-api/v1/interfaces/example-api.interface'
 
@@ -18,7 +22,7 @@ describe('App Controller', () => {
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             controllers: [ExampleApiController],
-            providers: [ExampleApiService],
+            providers: [JwtAuthGuard, RolesGuard, ExampleApiService],
         }).compile()
 
         app = module.createNestApplication()
@@ -151,19 +155,12 @@ describe('App Controller', () => {
             const exampleApiCreated = await createExample(app, exampleApiCreateMock())
             const exampleApiUpdate = exampleApiUpdateMock()
 
-            console.log(exampleApiUpdate)
-            console.log(exampleApiUpdate.date)
-
-
             const newExampleApi = Object.assign({}, exampleApiCreated)
             newExampleApi.name = exampleApiUpdate.name!
             newExampleApi.email = exampleApiUpdate.email!
             newExampleApi.date = exampleApiUpdate.date!
             newExampleApi.value = exampleApiUpdate.value!
             newExampleApi.number = exampleApiUpdate.number!
-
-            console.log(newExampleApi.date)
-            console.log(exampleApiUpdate.date)
 
             return await superTest(app.getHttpServer())
                 .put(`${baseUrl}/${exampleApiCreated.id}`)

@@ -1,13 +1,15 @@
 import { Controller, Get, Post, Body, Query, Param, Put, Delete, HttpCode, UseGuards } from '@nestjs/common'
 
-import { RolesGuard } from 'guards/role.guard'
-import { Roles } from 'decorators/role.decorator'
+import { JwtAuthGuard } from '../../guards/jwt-auth.guard'
+import { RolesGuard } from '../../guards/role.guard'
+
+import { Roles } from '../../decorators/role.decorator'
+
+import ExampleApiService from './example-api.service'
 
 import ExampleApiFilterDto from './dtos/example-api-filter.dto'
 import ExampleApiCreateDto from './dtos/example-api-create.dto'
 import ExampleApiUpdateDto from './dtos/example-api-update.dto'
-import ExampleApiService from './example-api.service'
-import { JwtAuthGuard } from 'guards/jwt-auth.guard'
 
 @Controller('v1/example-api')
 @UseGuards(RolesGuard)

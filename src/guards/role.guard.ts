@@ -4,7 +4,7 @@ import { Reflector } from '@nestjs/core'
 import { Request } from 'express'
 
 import KeycloakJwtDto from '../auth/dtos/keycloak-jwt.dto'
-import MessageUtil from 'utils/messages.util'
+import MessageUtil from '../utils/messages.util'
 
 @Injectable()
 export class RolesGuard implements CanActivate {

@@ -4,11 +4,15 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { random } from 'faker'
 
+import {JwtAuthGuard} from '../../../../src/guards/jwt-auth.guard'
+import {RolesGuard} from '../../../../src/guards/role.guard'
+
 import ExampleApiService from '../../../../src/example-api/v1/example-api.service'
 import ExampleApiController from '../../../../src/example-api/v1/example-api.controller'
+
+import MessageUtil from '../../../../src/utils/messages.util'
 import IExampleApi from '../../../../src/example-api/v1/interfaces/example-api.interface'
 import ExampleApiFilterDto from '../../../../src/example-api/v1/dtos/example-api-filter.dto'
-import MessageUtil from '../../../../src/utils/messages.util'
 
 import { exampleApiCreateMock } from '../../../../__mocks__/example-api.mock'
 
@@ -21,7 +25,7 @@ describe('Example Api Controller', () => {
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             controllers: [ExampleApiController],
-            providers: [ExampleApiService],
+            providers: [JwtAuthGuard, RolesGuard, ExampleApiService],
         }).compile()
 
         service = module.get<ExampleApiService>(ExampleApiService)
