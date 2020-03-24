@@ -1,5 +1,5 @@
 import { ExceptionFilter, Catch, ArgumentsHost } from '@nestjs/common'
-import MessageUtil, { IMessage } from 'utils/messages.util'
+import MessageUtil, { IMessage } from '../utils/messages.util'
 
 @Catch()
 export default class AllExceptionsFilter implements ExceptionFilter {

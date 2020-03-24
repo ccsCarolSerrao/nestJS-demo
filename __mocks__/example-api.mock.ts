@@ -1,4 +1,4 @@
-import { random, internet, name } from 'faker'
+import { random, internet, name, finance } from 'faker'
 import moment from 'moment'
 
 import ExampleApiCreateDto from '../src/example-api/v1/dtos/example-api-create.dto'
@@ -13,7 +13,7 @@ export const exampleApiCreateMock = () => {
             .add(1, 'month')
             .toDate(),
         number: random.number({ min: 0 }),
-        value: random.number({ max: 100 }),
+        value: Number(finance.amount(1, 100, 2))
     } as ExampleApiCreateDto
 }
 
@@ -25,6 +25,6 @@ export const exampleApiUpdateMock = () => {
             .add(2, 'month')
             .toDate(),
         number: random.number({ min: 0 }),
-        value: random.number({ max: 100 }),
+        value: Number(finance.amount(1, 100, 2))
     } as ExampleApiUpdateDto
 }

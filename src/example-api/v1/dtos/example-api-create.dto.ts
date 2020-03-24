@@ -1,4 +1,4 @@
-import { IsString, IsInt, IsDate, IsDecimal, IsNotEmpty, IsPositive, MaxLength, IsEmail, MinDate } from 'class-validator'
+import { IsString, IsInt, IsDate, IsNotEmpty, IsPositive, MaxLength, IsEmail, MinDate, IsNumber } from 'class-validator'
 import { Type } from 'class-transformer'
 
 export default class ExampleApiCreateDto {
@@ -24,7 +24,7 @@ export default class ExampleApiCreateDto {
     @IsNotEmpty()
     number!: number
 
-    @IsDecimal()
+    @IsNumber()
     @IsNotEmpty()
     value!: number
 }

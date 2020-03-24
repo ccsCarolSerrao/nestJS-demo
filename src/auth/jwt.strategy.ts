@@ -5,7 +5,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt'
 
 import { plainToClass } from 'class-transformer'
 
-import keycloakConfig from 'configs/keycloak.config'
+import keycloakConfig from '../configs/keycloak.config'
 import KeycloakJwtDto from './dtos/keycloak-jwt.dto'
 
 @Injectable()

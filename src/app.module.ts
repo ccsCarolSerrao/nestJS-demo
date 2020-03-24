@@ -2,13 +2,13 @@ import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { APP_FILTER, APP_PIPE } from '@nestjs/core'
 
-import AllExceptionsFilter from 'filters/all-exception.filter'
-import { ValidationPipe } from 'pipes/validation.pipe'
-import keycloakConfig from 'configs/keycloak.config'
+import AllExceptionsFilter from './filters/all-exception.filter'
+import { ValidationPipe } from './pipes/validation.pipe'
+import keycloakConfig from './configs/keycloak.config'
 
 import LoggerMiddleware from './middlewares/logger.middleware'
 import ExampleApiModule from './example-api/v1/example-api.module'
-import { AuthModule } from 'auth/auth.module'
+import { AuthModule } from './auth/auth.module'
 
 @Module({
     imports: [
@@ -32,7 +32,7 @@ import { AuthModule } from 'auth/auth.module'
         LoggerMiddleware,
     ],
 })
-export class AppModule implements NestModule {
+export default class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
         consumer.apply(LoggerMiddleware).forRoutes('v1/example-api')
     }

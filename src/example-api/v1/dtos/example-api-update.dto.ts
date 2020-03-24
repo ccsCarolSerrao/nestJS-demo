@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsDecimal, IsInt, IsPositive, MinDate, IsDate, IsEmail, MaxLength } from 'class-validator'
+import { IsString, IsOptional, IsInt, IsPositive, MinDate, IsDate, IsEmail, MaxLength, IsNumber } from 'class-validator'
 import { Type } from 'class-transformer'
 
 export default class ExampleApiUpdateDto {
@@ -24,7 +24,7 @@ export default class ExampleApiUpdateDto {
     @IsOptional()
     number?: number
 
-    @IsDecimal()
+    @IsNumber()
     @IsOptional()
     value?: number
 }

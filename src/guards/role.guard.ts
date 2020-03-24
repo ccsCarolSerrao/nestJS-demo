@@ -17,15 +17,16 @@ export class RolesGuard implements CanActivate {
         }
         const request = context.switchToHttp().getRequest<Request>()
         const user = request.user as KeycloakJwtDto
+        const userRoles = user['example-api']?.roles
 
-        if (this.hasPermission(roles, user['example-api']?.roles)) {
+        if (this.hasPermission(roles, userRoles)) {
             return true
         }
 
         throw MessageUtil.authentication.error.userActionNotAllowed
     }
 
-    protected hasPermission(roles: string[], userRoles: string[]) {
+    protected hasPermission(roles: string[], userRoles: string[] | undefined) {
         return roles?.some(r => userRoles?.includes(r))
     }
 }

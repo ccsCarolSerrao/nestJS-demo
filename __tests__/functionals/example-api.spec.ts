@@ -2,31 +2,41 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { Test, TestingModule } from '@nestjs/testing'
 import { INestApplication, HttpStatus } from '@nestjs/common'
+
 import superTest from 'supertest'
 import { random } from 'faker'
 
-import {JwtAuthGuard} from '../../src/guards/jwt-auth.guard'
-import {RolesGuard} from '../../src/guards/role.guard'
+import AppModule from '../../src/app.module'
 
-import ExampleApiController from '../../src/example-api/v1/example-api.controller'
-import ExampleApiService from '../../src/example-api/v1/example-api.service'
 
 import { exampleApiUpdateMock, exampleApiCreateMock } from '../../__mocks__/example-api.mock'
 import IExampleApi from '../../src/example-api/v1/interfaces/example-api.interface'
 
-const baseUrl = '/v1/example-api'
+import AuthService from '../../src/auth/auth.service'
+import MessageUtil from '../../src/utils/messages.util'
 
-describe('App Controller', () => {
+const baseUrl = '/v1/example-api'
+let tokenNoPermissionMock: string
+let tokenAllPermissionMock: string
+
+describe('Example API', () => {
     let app: INestApplication
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            controllers: [ExampleApiController],
-            providers: [JwtAuthGuard, RolesGuard, ExampleApiService],
+            imports: [
+                AppModule,
+            ],
         }).compile()
 
         app = module.createNestApplication()
-        await app.init()
+        await app.init() 
+
+        const authService = module.get<AuthService>(AuthService)
+        const roles = ['example:create', 'example:search', 'example:get', 'example:update', 'example:remove']
+
+        tokenAllPermissionMock = await authService.createJwtToken({ 'example-api': { roles } })
+        tokenNoPermissionMock = await authService.createJwtToken({})
     })
 
     afterEach(async () => {
@@ -34,14 +44,23 @@ describe('App Controller', () => {
     })
 
     describe('Create', () => {
+        it('shoud return a 401 status when user nonautorized', async () => {
+            return await superTest(app.getHttpServer())
+                .post(`${baseUrl}/`)
+                .set('Authorization', `Bearer ${tokenNoPermissionMock}`)
+                .send(MessageUtil.authentication.error.userActionNotAllowed)
+                .expect(HttpStatus.METHOD_NOT_ALLOWED)
+        })
+
         it('shoud return a 201 status', async () => {
             return await superTest(app.getHttpServer())
                 .post(`${baseUrl}/`)
+                .set('Authorization', `Bearer ${tokenAllPermissionMock}`)
                 .send(exampleApiUpdateMock())
                 .expect(HttpStatus.CREATED)
         })
 
-        it('shoud return an example object in result', async () => {
+        it('shoud return an id in object result', async () => {
             /*
       return await superTest(app.getHttpServer())
         .post(`${baseUrl}/`)
@@ -52,11 +71,20 @@ describe('App Controller', () => {
     })
 
     describe('Find All', () => {
+        it('shoud return a 401 status when user nonautorized', async () => {
+            return await superTest(app.getHttpServer())
+                .get(`${baseUrl}/`)
+                .set('Authorization', `Bearer ${tokenNoPermissionMock}`)
+                .send(MessageUtil.authentication.error.userActionNotAllowed)
+                .expect(HttpStatus.METHOD_NOT_ALLOWED)
+        })
+
         it('shoud return a 200 status', async () => {
             await createExample(app, exampleApiCreateMock())
 
             return await superTest(app.getHttpServer())
                 .get(`${baseUrl}/`)
+                .set('Authorization', `Bearer ${tokenAllPermissionMock}`)
                 .expect(HttpStatus.OK)
         })
 
@@ -67,6 +95,7 @@ describe('App Controller', () => {
 
             return await superTest(app.getHttpServer())
                 .get(`${baseUrl}/`)
+                .set('Authorization', `Bearer ${tokenAllPermissionMock}`)
                 .expect(exampleApi)
         })
 
@@ -78,6 +107,7 @@ describe('App Controller', () => {
             return await superTest(app.getHttpServer())
                 .get(`${baseUrl}/`)
                 .query({ id: oneExampleApi.id })
+                .set('Authorization', `Bearer ${tokenAllPermissionMock}`)
                 .expect(HttpStatus.OK)
         })
 
@@ -89,6 +119,7 @@ describe('App Controller', () => {
             return await superTest(app.getHttpServer())
                 .get(`${baseUrl}/`)
                 .query({ id: oneExampleApi.id! })
+                .set('Authorization', `Bearer ${tokenAllPermissionMock}`)
                 .expect([oneExampleApi])
         })
 
@@ -100,6 +131,7 @@ describe('App Controller', () => {
             return await superTest(app.getHttpServer())
                 .get(`${baseUrl}/`)
                 .query({ email: oneExampleApi.email! })
+                .set('Authorization', `Bearer ${tokenAllPermissionMock}`)
                 .expect([oneExampleApi])
         })
 
@@ -111,16 +143,28 @@ describe('App Controller', () => {
             return await superTest(app.getHttpServer())
                 .get(`${baseUrl}/`)
                 .query({ name: oneExampleApi.name! })
+                .set('Authorization', `Bearer ${tokenAllPermissionMock}`)
                 .expect([oneExampleApi])
         })
     })
 
     describe('Find One', () => {
+        it('shoud return a 401 status when user nonautorized', async () => {
+            const idMock = random.uuid()
+
+            return await superTest(app.getHttpServer())
+                .get(`${baseUrl}/${idMock}`)
+                .set('Authorization', `Bearer ${tokenNoPermissionMock}`)
+                .send(MessageUtil.authentication.error.userActionNotAllowed)
+                .expect(HttpStatus.METHOD_NOT_ALLOWED)
+        })
+
         it('shoud return a 200 status', async () => {
             const exampleApi = await createExample(app, exampleApiCreateMock())
 
             return await superTest(app.getHttpServer())
                 .get(`${baseUrl}/${exampleApi.id}`)
+                .set('Authorization', `Bearer ${tokenAllPermissionMock}`)
                 .expect(HttpStatus.OK)
         })
 
@@ -129,15 +173,26 @@ describe('App Controller', () => {
 
             return await superTest(app.getHttpServer())
                 .get(`${baseUrl}/${exampleApi.id}`)
+                .set('Authorization', `Bearer ${tokenAllPermissionMock}`)
                 .expect(exampleApi)
         })
     })
 
     describe('Update', () => {
+        it('shoud return a 401 status when user nonautorized', async () => {
+            const idMock = random.uuid()
+
+            return await superTest(app.getHttpServer())
+                .put(`${baseUrl}/${idMock}`)
+                .set('Authorization', `Bearer ${tokenNoPermissionMock}`)
+                .send(MessageUtil.authentication.error.userActionNotAllowed)
+                .expect(HttpStatus.METHOD_NOT_ALLOWED)
+        })
+
         it('shoud return a 200 status', async () => {
             const exampleApiCreated = await createExample(app, exampleApiCreateMock())
             const exampleApiUpdate = exampleApiUpdateMock()
-            
+
             const newExampleApi = Object.assign({}, exampleApiCreated)
             newExampleApi.name = exampleApiUpdate.name!
             newExampleApi.email = exampleApiUpdate.email!
@@ -147,6 +202,7 @@ describe('App Controller', () => {
 
             return await superTest(app.getHttpServer())
                 .put(`${baseUrl}/${exampleApiCreated.id}`)
+                .set('Authorization', `Bearer ${tokenAllPermissionMock}`)
                 .send(exampleApiUpdateMock())
                 .expect(HttpStatus.OK)
         })
@@ -164,6 +220,7 @@ describe('App Controller', () => {
 
             return await superTest(app.getHttpServer())
                 .put(`${baseUrl}/${exampleApiCreated.id}`)
+                .set('Authorization', `Bearer ${tokenAllPermissionMock}`)
                 .send(exampleApiUpdate)
                 .expect(newExampleApi)
         })
@@ -173,7 +230,7 @@ describe('App Controller', () => {
             const exampleApiUpdate = exampleApiUpdateMock()
             exampleApiUpdate.date = exampleApiCreated.date
             exampleApiUpdate.number = exampleApiCreated.number
-            
+
             const newExampleApi = Object.assign({}, exampleApiCreated)
             newExampleApi.name = exampleApiUpdate.name!
             newExampleApi.email = exampleApiUpdate.email!
@@ -181,6 +238,7 @@ describe('App Controller', () => {
 
             return await superTest(app.getHttpServer())
                 .put(`${baseUrl}/${exampleApiCreated.id}`)
+                .set('Authorization', `Bearer ${tokenAllPermissionMock}`)
                 .send(exampleApiUpdate)
                 .expect(newExampleApi)
         })
@@ -191,34 +249,47 @@ describe('App Controller', () => {
             exampleApiUpdate.name = exampleApiCreated.name
             exampleApiUpdate.email = exampleApiCreated.email
             exampleApiUpdate.value = exampleApiCreated.value
-            
+
             const newExampleApi = Object.assign({}, exampleApiCreated)
             newExampleApi.date = exampleApiUpdate.date!
             newExampleApi.number = exampleApiUpdate.number!
 
             return await superTest(app.getHttpServer())
                 .put(`${baseUrl}/${exampleApiCreated.id}`)
+                .set('Authorization', `Bearer ${tokenAllPermissionMock}`)
                 .send(exampleApiUpdate)
                 .expect(newExampleApi)
         })
 
-        it('shoud be 500 when sent a nonvailid id', async () => {
-            const exampleApiCreated = await createExample(app, exampleApiCreateMock())
+        it('shoud be 404 when sent a nonvailid id', async () => {
+            await createExample(app, exampleApiCreateMock())
             const idMock = random.uuid()
 
             return await superTest(app.getHttpServer())
                 .put(`${baseUrl}/${idMock}`)
-                .send(exampleApiCreated)
-                .expect(HttpStatus.INTERNAL_SERVER_ERROR)
+                .set('Authorization', `Bearer ${tokenAllPermissionMock}`)
+                .send(MessageUtil.example.error.notFound)
+                .expect(HttpStatus.NOT_FOUND)
         })
     })
 
     describe('Delete', () => {
+        it('shoud return a 401 status when user nonautorized', async () => {
+            const idMock = random.uuid()
+
+            return await superTest(app.getHttpServer())
+                .delete(`${baseUrl}/${idMock}`)
+                .set('Authorization', `Bearer ${tokenNoPermissionMock}`)
+                .send(MessageUtil.authentication.error.userActionNotAllowed)
+                .expect(HttpStatus.METHOD_NOT_ALLOWED)
+        })
+
         it('shoud return a 200 status', async () => {
             const exampleApi = await createExample(app, exampleApiCreateMock())
 
             return await superTest(app.getHttpServer())
                 .delete(`${baseUrl}/${exampleApi.id}`)
+                .set('Authorization', `Bearer ${tokenAllPermissionMock}`)
                 .expect(HttpStatus.OK)
         })
 
@@ -227,16 +298,19 @@ describe('App Controller', () => {
 
             return await superTest(app.getHttpServer())
                 .delete(`${baseUrl}/${exampleApi.id}`)
+                .set('Authorization', `Bearer ${tokenAllPermissionMock}`)
                 .expect({})
         })
 
-        it('shoud be 500 when sent a nonvailid id', async () => {
+        it('shoud be 404 when sent a nonvailid id', async () => {
             await createExample(app, exampleApiCreateMock())
             const idMock = random.uuid()
 
             return await superTest(app.getHttpServer())
                 .delete(`${baseUrl}/${idMock}`)
-                .expect(HttpStatus.INTERNAL_SERVER_ERROR)
+                .set('Authorization', `Bearer ${tokenAllPermissionMock}`)
+                .send(MessageUtil.example.error.notFound)
+                .expect(HttpStatus.NOT_FOUND)
         })
     })
 })
@@ -244,6 +318,7 @@ describe('App Controller', () => {
 const createExample = async (app: INestApplication, exampleApiMock: IExampleApi) => {
     const result = await superTest(app.getHttpServer())
         .post(`${baseUrl}/`)
+        .set('Authorization', `Bearer ${tokenAllPermissionMock}`)
         .send(exampleApiMock)
 
     const exampleApi = JSON.parse(result.text) as IExampleApi

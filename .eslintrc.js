@@ -16,7 +16,7 @@ module.exports = {
         quotes: ['error', 'single'],
         semi: ['error', 'never'],
         indent: ['error', 4],
-        'max-len': ['error', { code: 200 }],
+        'max-len': ['error', { code: 180 }],
         'import/prefer-default-export': 'off',
         'import/no-extraneous-dependencies': 'off',
         'lines-between-class-members': 'off',
