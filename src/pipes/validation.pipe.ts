@@ -14,7 +14,7 @@ export class ValidationPipe implements PipeTransform<any> {
         if (errors.length > 0) {
             const message: IMessage = MessageUtil.commons.error.validationError
             message.result = errors
-            
+
             throw message
         }
         return value

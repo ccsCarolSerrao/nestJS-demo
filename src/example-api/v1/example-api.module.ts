@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common'
+
+import { RolesGuard } from 'guards/role.guard'
+
 import ExampleApiController from './example-api.controller'
 import ExampleApiService from './example-api.service'
-import { RolesGuard } from 'guards/role.guard'
-import { AuthGuard } from 'guards/auth.guard'
+import { JwtAuthGuard } from 'guards/jwt-auth.guard'
 
 @Module({
     controllers: [ExampleApiController],
-    providers: [AuthGuard, RolesGuard, ExampleApiService],
+    providers: [JwtAuthGuard, RolesGuard, ExampleApiService],
 })
 export default class ExampleApiModule {}

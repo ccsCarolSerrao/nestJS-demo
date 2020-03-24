@@ -171,7 +171,7 @@ describe('App Controller', () => {
                 .expect(newExampleApi)
         })
 
-        it('shoud return an updated example object in result  when change date and number', async () => {
+        it('shoud return an updated example object in result when change date and number', async () => {
             const exampleApiCreated = await createExample(app, exampleApiCreateMock())
             const exampleApiUpdate = exampleApiUpdateMock()
             exampleApiUpdate.date = exampleApiCreated.date

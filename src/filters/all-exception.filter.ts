@@ -11,7 +11,7 @@ export default class AllExceptionsFilter implements ExceptionFilter {
         let message: IMessage | undefined
 
         if (exception instanceof Error) {
-            message = exception instanceof Error ? MessageUtil.commons.error.sintaxeError : MessageUtil.commons.error.serverError
+            message = exception instanceof Error ? MessageUtil.commons.error.serverError : MessageUtil.commons.error.sintaxeError
             message.result = {
                 message: exception.message,
                 stack: exception.stack,
@@ -25,7 +25,6 @@ export default class AllExceptionsFilter implements ExceptionFilter {
         response.status(message.status).json(message)
     }
 }
-
 
 /*
     {

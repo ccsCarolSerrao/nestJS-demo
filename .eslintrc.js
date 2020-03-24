@@ -22,6 +22,7 @@ module.exports = {
         'lines-between-class-members': 'off',
         'no-unused-vars': 'off',
         curly: ['error', 'all'],
+        "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
         '@typescript-eslint/interface-name-prefix': 'off',
         '@typescript-eslint/explicit-function-return-type': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
