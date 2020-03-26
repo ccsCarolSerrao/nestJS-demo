@@ -5,6 +5,6 @@ export const responseMock = () => {
     res.status = jest.fn().mockReturnValue(res)
     res.json = jest.fn().mockReturnValue(res)
     res.send = jest.fn().mockReturnValue(res)
-    
+
     return res as Response
 }

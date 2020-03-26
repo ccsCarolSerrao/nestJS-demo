@@ -29,7 +29,7 @@
     "experimentalDecorators": true
   },
   "include": [
-      "src/**/*", "__tests__/units/logger.middleware.spec.ts"
+      "src/**/*"
   ],
   "exclude": [
     "node_modules",

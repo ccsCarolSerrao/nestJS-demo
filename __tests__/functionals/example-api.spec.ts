@@ -8,7 +8,6 @@ import { random } from 'faker'
 
 import AppModule from '../../src/app.module'
 
-
 import { exampleApiUpdateMock, exampleApiCreateMock } from '../../__mocks__/example-api.mock'
 import IExampleApi from '../../src/example-api/v1/interfaces/example-api.interface'
 
@@ -24,13 +23,11 @@ describe('Example API', () => {
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            imports: [
-                AppModule,
-            ],
+            imports: [AppModule],
         }).compile()
 
         app = module.createNestApplication()
-        await app.init() 
+        await app.init()
 
         const authService = module.get<AuthService>(AuthService)
         const roles = ['example:create', 'example:search', 'example:get', 'example:update', 'example:remove']

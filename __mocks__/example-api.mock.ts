@@ -13,7 +13,7 @@ export const exampleApiCreateMock = () => {
             .add(1, 'month')
             .toDate(),
         number: random.number({ min: 0 }),
-        value: Number(finance.amount(1, 100, 2))
+        value: Number(finance.amount(1, 100, 2)),
     } as ExampleApiCreateDto
 }
 
@@ -25,6 +25,6 @@ export const exampleApiUpdateMock = () => {
             .add(2, 'month')
             .toDate(),
         number: random.number({ min: 0 }),
-        value: Number(finance.amount(1, 100, 2))
+        value: Number(finance.amount(1, 100, 2)),
     } as ExampleApiUpdateDto
 }

@@ -4,8 +4,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { random } from 'faker'
 
-import {JwtAuthGuard} from '../../../../src/guards/jwt-auth.guard'
-import {RolesGuard} from '../../../../src/guards/role.guard'
+import { JwtAuthGuard } from '../../../../src/guards/jwt-auth.guard'
+import { RolesGuard } from '../../../../src/guards/role.guard'
 
 import ExampleApiService from '../../../../src/example-api/v1/example-api.service'
 import ExampleApiController from '../../../../src/example-api/v1/example-api.controller'

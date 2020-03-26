@@ -182,7 +182,8 @@ describe('ExampleApiService', () => {
                 await service.delete(idMock)
             } catch (error) {
                 expect(error).toBe(MessageUtil.example.error.notFound)
-            }})
+            }
+        })
     })
 })
 
