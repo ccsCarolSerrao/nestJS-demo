@@ -1,15 +1,11 @@
 import { NestFactory } from '@nestjs/core'
 import AppModule from './app.module'
-import helmet from 'helmet'
+import AppUtil from './utils/app.util'
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule)
 
-    app.use(helmet.noSniff())
-    app.use(helmet.hidePoweredBy())
-    app.use(helmet.hsts())
-
-    app.setGlobalPrefix('api')
+    AppUtil.config(app)
 
     await app.listen(3000)
 }

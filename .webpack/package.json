@@ -1,0 +1,6 @@
+{
+    "dependencies": {
+      "newrelic": "^6.5.0"
+    }
+  }
+  

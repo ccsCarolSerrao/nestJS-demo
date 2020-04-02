@@ -1,30 +1,27 @@
 {
   "compilerOptions": {
     "lib": [
+      "esnext",
       "es2020"
     ],
-    "module": "commonjs",
-    "target": "es2019",
-    "moduleResolution": "node",
-    "outDir": "./dist",
-    "baseUrl": "./src/",
-    "incremental": true,
-    "noLib": false,
-    "strict": true,
     "allowUnusedLabels": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "target": "es2019",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    "baseUrl": "./src/",
+    "noLib": false,
+    "strict": true,
     "allowSyntheticDefaultImports": true,
     "newLine": "LF",
     "pretty": true,
     "allowJs": true,
     "checkJs": true,
     "sourceMap": true,
-    "declaration": true,
     "removeComments": true,
-    //helmet
     "esModuleInterop": true,
-    //helmet
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true
   },

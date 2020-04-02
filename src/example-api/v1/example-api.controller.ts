@@ -1,5 +1,8 @@
-import { Controller, Get, Post, Body, Query, Param, Put, Delete, HttpCode, UseGuards } from '@nestjs/common'
+import { Controller, Get, Post, Body, Query, Param, Put, Delete, HttpCode, UseGuards, HttpStatus, UseFilters, UsePipes, UseInterceptors } from '@nestjs/common'
 
+import { LoggingInterceptor } from '../../interceptors/logging.interceptor'
+import AllExceptionsFilter from '../../filters/all-exception.filter'
+import { ValidationPipe } from '../../pipes/validation.pipe'
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard'
 import { RolesGuard } from '../../guards/role.guard'
 
@@ -12,13 +15,16 @@ import ExampleApiCreateDto from './dtos/example-api-create.dto'
 import ExampleApiUpdateDto from './dtos/example-api-update.dto'
 
 @Controller('v1/example-api')
+@UseInterceptors(LoggingInterceptor)
+@UsePipes(ValidationPipe)
+@UseFilters(AllExceptionsFilter)
 @UseGuards(RolesGuard)
 @UseGuards(JwtAuthGuard)
 export default class ExampleApiController {
     constructor(private exampleService: ExampleApiService) {}
 
     @Post()
-    @HttpCode(201)
+    @HttpCode(HttpStatus.CREATED)
     @Roles('example:create')
     async create(@Body() exampleApi: ExampleApiCreateDto) {
         return await this.exampleService.create(exampleApi)
