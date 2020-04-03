@@ -1,27 +1,25 @@
-import { PubSub } from '@google-cloud/pubsub'
+import { NestFactory } from '@nestjs/core'
+import ExampleCloudStorageModule from './example-cloud-storage.module'
+import ExampleCloudStorageService from './example-cloud-storage.service'
 
-const publishToTopic = async () => {
-    const projectId = 'psyched-era-269322'
-    const pubsub = new PubSub({ projectId })
+const bootstrap = async () => {
+    const app = await NestFactory.createApplicationContext(ExampleCloudStorageModule)
+    const service = app.get(ExampleCloudStorageService)
 
-    const topicName = 'example-topic'
-    const data = JSON.stringify({ foo: 'bar' })
-
-    const dataBuffer = Buffer.from(data)
-
-    const messageId = await pubsub.topic(topicName).publish(dataBuffer)
-    console.log(`Message ${messageId} published.`)
+    return service
 }
 
 const handle = async (data: any, _context: any) => {
+    const service = await bootstrap()
+
     const file = data
     if (file.resourceState === 'not_exists') {
         console.log(`File ${file.name} deleted.`)
     } else if (file.metageneration === '1') {
-        await publishToTopic()
+        await service.publishToTopic()
         console.log(`File ${file.name} uploaded.`)
     } else {
-        await publishToTopic()
+        await service.publishToTopic()
         console.log(`File ${file.name} metadata updated.`)
     }
 }
