@@ -15,13 +15,14 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,__test__,__mocks__}/**/*.ts\"",
-    "lint:fix": "eslint \"{src,__test__,__mocks__}/**/*.ts\" --fix",
+    "lint:fix": "eslint \"{src,__tests__,__mocks__}/**/*.ts\" --fix",
     "test": "jest --config ./__tests__/units/jest.config.js",
     "test:watch": "jest --config ./__tests__/units/jest.config.js --watch",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./__tests__/functionals/jest.config.js"
   },
   "dependencies": {
+    "@google-cloud/pubsub": "^1.7.0",
     "@nestjs/common": "^7.0.0",
     "@nestjs/config": "^0.4.0",
     "@nestjs/core": "^7.0.0",

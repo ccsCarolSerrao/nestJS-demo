@@ -9,6 +9,8 @@ module.exports = {
     },
     entry: {
         'example-api': './src/example-api/v1/handler.ts',
+        'example-cloud-storage': './src/example-cloud-storage/handler.ts',
+        'example-pub-sub': './src/example-pub-sub/handler.ts',
     },
     devtool: 'source-map',
     resolve: {
@@ -47,5 +49,6 @@ module.exports = {
     ],
     externals: {
         newrelic: true,
+        '@google-cloud/pubsub': true
     },
 }
